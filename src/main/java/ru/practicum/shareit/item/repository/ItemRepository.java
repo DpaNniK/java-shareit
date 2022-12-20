@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.repository;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.Collection;
+import java.util.Map;
 
 public interface ItemRepository {
     Item createItem(Integer userId, Item item);
@@ -22,4 +23,6 @@ public interface ItemRepository {
     Collection<Item> searchItemByText(Integer userId, String text);
 
     void deleteAllItem();
+
+    Map<Integer, Item> getItemsMap();
 }

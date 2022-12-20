@@ -3,6 +3,7 @@ package ru.practicum.shareit.user.repository;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.Collection;
+import java.util.Map;
 
 public interface UserRepository {
     User createUser(User user);
@@ -16,6 +17,8 @@ public interface UserRepository {
     User getUserById(Integer userId);
 
     Collection<User> getAllUsers();
+
+    Map<Integer, User> getUsersMap();
 
     void deleteUserById(Integer userId);
 
