@@ -16,7 +16,7 @@ import java.util.Collection;
 @RequestMapping(path = "/users")
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
 
     @PostMapping
     public User createUser(@RequestBody @Valid UserDto userDto) {

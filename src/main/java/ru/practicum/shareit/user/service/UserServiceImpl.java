@@ -26,20 +26,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(UserDto userDto) {
         userDto.setId(id);
-        if (checkNotDuplicateEmail(UserMapper.toUser(userDto))) {
-            id++;
-            log.info("Создан новый пользователь с id = {}", id);
-            return userRepository.createUser(UserMapper.toUser(userDto));
+        if (checkDuplicateEmail(UserMapper.toUser(userDto))) {
+            log.warn("Ошибка при создании пользователя. Пользователь с таким email уже существует");
+            throw new RequestError(HttpStatus.CONFLICT, "Пользователь с таким email уже существует");
         }
-        log.warn("Ошибка при создании пользователя. Пользователь с таким email уже существует");
-        throw new RequestError(HttpStatus.CONFLICT, "Пользователь с таким email уже существует");
-
+        id++;
+        log.info("Создан новый пользователь с id = {}", id);
+        return userRepository.createUser(UserMapper.toUser(userDto));
     }
 
     @Override
     public User updateUser(UserDto userDto) {
         User user = UserMapper.toUser(userDto);
-        if (!checkNotDuplicateEmail(user)) {
+        if (checkDuplicateEmail(user)) {
             log.warn("Ошибка при обновлении email пользователя. Пользователь с таким email уже существует");
             throw new RequestError(HttpStatus.CONFLICT, "Пользователь с таким email уже существует");
         }
@@ -91,8 +90,8 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteAllUser();
     }
 
-    private boolean checkNotDuplicateEmail(User user) {
-        return userRepository.getUsersMap().values().stream().noneMatch(mapUser -> mapUser.getEmail()
+    private boolean checkDuplicateEmail(User user) {
+        return userRepository.getUsersMap().values().stream().anyMatch(mapUser -> mapUser.getEmail()
                 .equals(user.getEmail()));
     }
 
