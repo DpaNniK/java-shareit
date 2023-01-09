@@ -10,6 +10,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
@@ -29,6 +31,8 @@ import java.util.Collection;
 import java.util.Optional;
 
 @SpringBootTest
+@Configuration
+@PropertySource("classpath:application.properties")
 class ItemServiceTest {
 
     @Autowired
