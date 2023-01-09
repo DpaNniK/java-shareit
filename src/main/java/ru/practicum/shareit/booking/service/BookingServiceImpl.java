@@ -209,6 +209,11 @@ public class BookingServiceImpl implements BookingService {
         return ownerBooking;
     }
 
+    @Override
+    public void deleteAllBooking() {
+        bookingRepository.deleteAll();
+    }
+
     //Получаю из booking DTO, т.к. из репозитория возвращается только booking
     private Collection<BookingDto> setBookingsDtoForUser(Collection<Booking> bookings) {
         Collection<BookingDto> ownerBooking = new ArrayList<>();

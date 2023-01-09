@@ -169,6 +169,16 @@ public class ItemServiceImpl implements ItemService {
         return commentResponseList;
     }
 
+    @Override
+    public void deleteAllItems() {
+        itemRepository.deleteAll();
+    }
+
+    @Override
+    public void deleteAllComments() {
+        commentRepository.deleteAll();
+    }
+
     private void checkUserIsOwner(Integer itemId, Integer userId) {
         Item resultItem = itemRepository.findById(itemId).orElse(null);
         if (resultItem == null) {

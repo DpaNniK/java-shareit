@@ -23,4 +23,8 @@ public interface ItemService {
     CommentResponseDto createComment(Integer userId, Integer itemId, String text);
 
     Collection<CommentResponseDto> getCommentList(Integer itemId);
+
+    void deleteAllItems();
+
+    void deleteAllComments();
 }

@@ -18,4 +18,6 @@ public interface BookingService {
     Collection<BookingDto> getAllBookingsForUser(BookingState state, Integer userId);
 
     Collection<BookingDto> getAllBookingForOwner(BookingState state, Integer ownerId);
+
+    void deleteAllBooking();
 }

@@ -82,7 +82,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteAllUser() {
-        this.id = 1;
         userRepository.deleteAll();
     }
 
