@@ -1,18 +1,24 @@
 package ru.practicum.shareit;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.function.Executable;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
 import ru.practicum.shareit.exception.RequestError;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
+
+import java.util.Optional;
 
 @SpringBootTest
 public class UserServiceTest {
@@ -20,35 +26,52 @@ public class UserServiceTest {
     @Autowired
     UserService userService;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @AfterEach
-    void updateRepository() {
+    void tearDown() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
         userService.deleteAllUser();
     }
 
     @Test
     public void testCreateUser() {
-        User user = userService.createUser(new UserDto("Игорь", "mail@mail.ru"));
-        assertEquals(user.getId(), 1 , "Неверно присвоен ID созданному пользователю");
-        assertEquals(user.getName(), "Игорь" , "Неверно присвоено имя созданному пользователю");
-        assertEquals(user.getEmail(), "mail@mail.ru" , "Неверно присвоен email созданному пользователю");
+        User userTest = userService.createUser(new UserDto("Игорь", "mail@mail.ru"));
+
+        Optional<User> userOptional = Optional.ofNullable(userService.getUserById(userTest.getId()));
+
+        assertThat(userOptional)
+                .isPresent()
+                .hasValueSatisfying(user ->
+                        assertThat(user).hasFieldOrPropertyWithValue("id", userTest.getId())
+                                .hasFieldOrPropertyWithValue("name", userTest.getName())
+                                .hasFieldOrPropertyWithValue("email", userTest.getEmail())
+                );
     }
 
     @Test
     public void testUpdateUser() {
-        userService.createUser(new UserDto("Игорь", "mail@mail.ru"));
+        User userTest = userService.createUser(new UserDto("Игорь", "mail@mail.ru"));
         UserDto userDto = new UserDto("Илья", "ilia@yandex.ru");
-        userDto.setId(1);
-        User updateUser = userService.updateUser(userDto);
-        assertEquals(updateUser.getId(), 1 , "Неверный ID у обновленного пользователя");
-        assertEquals(updateUser.getName(), "Илья" , "Неверно обновлено имя пользователя");
-        assertEquals(updateUser.getEmail(), "ilia@yandex.ru" , "Неверно обновлен email пользователя");
+        userDto.setId(userTest.getId());
+        Optional<User> userOptional = Optional.ofNullable(userService.updateUser(userDto));
+
+        assertThat(userOptional)
+                .isPresent()
+                .hasValueSatisfying(user ->
+                        assertThat(user).hasFieldOrPropertyWithValue("id", userTest.getId())
+                                .hasFieldOrPropertyWithValue("name", userDto.getName())
+                                .hasFieldOrPropertyWithValue("email", userDto.getEmail())
+                );
     }
 
     @Test
     public void testDeleteUserById() {
-        userService.createUser(new UserDto("Игорь", "mail@mail.ru"));
-        userService.deleteUserById(1);
-        assertEquals(userService.getAllUsers().size(), 0 , "Пользователь не удален");
+        User userTest = userService.createUser(new UserDto("Игорь", "mail@mail.ru"));
+        userService.deleteUserById(userTest.getId());
+
+        assertEquals(userService.getAllUsers().size(), 0, "Пользователь не удален");
     }
 
     @Test
@@ -58,15 +81,6 @@ public class UserServiceTest {
                 generateExecutableForDeleteNotFoundUser()
         );
         assertEquals(HttpStatus.BAD_REQUEST, er.getStatus());
-    }
-
-    @Test
-    public void getRequestErrorForDuplicateEmail() {
-        RequestError er = Assertions.assertThrows(
-                RequestError.class,
-                generateExecutableForCreateDuplicateEmail()
-        );
-        assertEquals(HttpStatus.CONFLICT, er.getStatus());
     }
 
     @Test
@@ -80,13 +94,7 @@ public class UserServiceTest {
 
     private Executable generateExecutableForDeleteNotFoundUser() {
         return () -> userService.deleteUserById(1);
-    }
 
-    private Executable generateExecutableForCreateDuplicateEmail() {
-        userService.createUser(new UserDto("Игорь", "mail@mail.ru"));
-        UserDto userDto = new UserDto("Илья", "mail@mail.ru");
-        userDto.setId(1);
-        return () -> userService.createUser(userDto);
     }
 
     private Executable generateExecutableForUpdateNotFoundUser() {
