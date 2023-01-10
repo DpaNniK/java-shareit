@@ -1,7 +1,7 @@
 package ru.practicum.shareit.item.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
@@ -22,9 +22,11 @@ import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
@@ -32,16 +34,6 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
     private Integer id = 1;
-
-    @Autowired
-    public ItemServiceImpl(ItemRepository itemRepository, UserService userService, BookingRepository bookingRepository,
-                           UserRepository userRepository, CommentRepository commentRepository) {
-        this.itemRepository = itemRepository;
-        this.userService = userService;
-        this.bookingRepository = bookingRepository;
-        this.userRepository = userRepository;
-        this.commentRepository = commentRepository;
-    }
 
     @Override
     public Item createItem(Integer userId, ItemDto itemDto) {
@@ -159,12 +151,14 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(itemId).orElse(null);
         Collection<CommentResponseDto> commentResponseList = new ArrayList<>();
         Collection<Comment> comments = commentRepository.getCommentsByItemId(itemId);
+        Collection<Integer> authorIds = comments.stream().map(Comment::getAuthorId)
+                .collect(Collectors.toList());
+        Map<Integer, User> userMap = userRepository.findByUserIds(authorIds)
+                .stream().collect(Collectors.toMap(User::getId, u -> u));
+
         for (Comment comment : comments) {
-            User author = userRepository.findById(comment.getAuthorId()).orElse(null);
-            if (author != null) {
-                CommentDto commentDto = CommentMapper.commentDto(comment, author, item);
-                commentResponseList.add(CommentMapper.commentDtoToResponseDto(commentDto));
-            }
+            CommentDto commentDto = CommentMapper.commentDto(comment, userMap.get(comment.getAuthorId()), item);
+            commentResponseList.add(CommentMapper.commentDtoToResponseDto(commentDto));
         }
         return commentResponseList;
     }

@@ -25,7 +25,6 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             "and b.start <= current_timestamp and b.end >= current_timestamp order by b.start desc")
     Collection<Booking> getCurrentBookingForUser(Integer bookerId);
 
-
     Collection<Booking> getBookingsByBookerIdAndStatus(Integer bookerId, Status status);
 
     Collection<Booking> getBookingsByBookerIdAndEndBefore(Integer bookerId, LocalDateTime now);
