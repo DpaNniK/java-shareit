@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.item.dto;
 
 import lombok.Data;
 import ru.practicum.shareit.item.model.Item;
@@ -7,11 +7,10 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 
 @Data
-public class Booking {
+public class CommentDto {
     private Integer id;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private String text;
     private Item item;
-    private User booker;
-    private Status status;
+    private User author;
+    private LocalDateTime created;
 }

@@ -1,28 +1,19 @@
 package ru.practicum.shareit.item.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.Collection;
-import java.util.Map;
 
-public interface ItemRepository {
-    Item createItem(Integer userId, Item item);
+@Repository
+public interface ItemRepository extends JpaRepository<Item, Integer> {
 
-    Item updateItem(Integer itemId, Integer userId, Item item);
+    Collection<Item> findItemsByOwnerId(Integer ownerId);
 
-    Item updateNameItem(Integer itemId, Integer userId, Item item);
-
-    Item updateDescriptionItem(Integer itemId, Integer userId, Item item);
-
-    Item updateStatusItem(Integer itemId, Integer userId, Item item);
-
-    Item getItemById(Integer userId, Integer itemId);
-
-    Collection<Item> getAllItemsOwner(Integer userId);
-
-    Collection<Item> searchItemByText(Integer userId, String text);
-
-    void deleteAllItem();
-
-    Map<Integer, Item> getItemsMap();
+    @Query(" select i from Item i " +
+            "where i.available = ?2 and upper(i.name) like upper(concat('%', ?1, '%')) " +
+            "or i.available = ?2 and upper(i.description) like upper(concat('%', ?1, '%'))")
+    Collection<Item> searchByText(String text, Boolean access);
 }

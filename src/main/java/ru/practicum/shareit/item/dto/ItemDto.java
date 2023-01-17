@@ -2,21 +2,26 @@ package ru.practicum.shareit.item.dto;
 
 import jdk.jfr.BooleanFlag;
 import lombok.Data;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.user.model.User;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Collection;
 
 @Data
 public class ItemDto {
     private Integer id;
     @NotBlank
-    private final String name;
+    private String name;
     @NotNull
-    private final String description;
+    private String description;
     @BooleanFlag()
     @NotNull()
-    private final Boolean available;
+    private Boolean available;
     private User owner;
-    private final Integer requestId;
+    private Integer requestId;
+    private Booking lastBooking;
+    private Booking nextBooking;
+    private Collection<CommentResponseDto> comments;
 }
