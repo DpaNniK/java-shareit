@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -117,7 +119,7 @@ public class BookingServiceImpl implements BookingService {
                 log.info("Пользователь {} запросил список всех арендованных предметов"
                         , userSender);
                 Collection<Booking> bookings = bookingRepository
-                        .getBookingsByBookerIdOrderByIdDesc(userSender.getId());
+                        .getBookingsByBookerIdOrderByStartDesc(userSender.getId());
                 userBooking = setBookingsDtoForUser(bookings);
                 break;
             case FUTURE:
@@ -154,6 +156,67 @@ public class BookingServiceImpl implements BookingService {
                 Collection<Booking> pastBookings = bookingRepository
                         .getBookingsByBookerIdAndEndBefore(userSender.getId(), LocalDateTime.now());
                 userBooking = setBookingsDtoForUser(pastBookings);
+                break;
+        }
+        return userBooking;
+    }
+
+    @Override
+    public Collection<BookingDto> getAllBookingsForUserWithPagination(BookingState state, Integer userId, Integer from
+            , Integer size) {
+        Collection<BookingDto> userBooking = new ArrayList<>();
+        //Проверка, что юзер существует
+        if (from < 0 || size <= 0 || size < from) {
+            log.warn("Пользователь ввел неправильные границы для пагинации");
+            throw new RequestError(HttpStatus.BAD_REQUEST, "Неверные границы пагинации");
+        }
+        User userSender = userService.getUserById(userId);
+        from = from / size ;
+        switch (state) {
+            case ALL:
+                log.info("Пользователь {} запросил список всех арендованных предметов"
+                        , userSender);
+                Page<Booking> bookings = bookingRepository
+                        .getBookingsByBookerIdOrderByStartDesc(userId, PageRequest.of(from, size));
+                userBooking = setBookingsDtoForUser(bookings.toList());
+                break;
+            case FUTURE:
+                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}"
+                        , userSender, BookingState.FUTURE);
+                Page<Booking> futureBookings = bookingRepository
+                        .getFutureBookingsForUser(userSender.getId(), LocalDateTime.now(), PageRequest.of(from, size));
+                userBooking = setBookingsDtoForUser(futureBookings.toList());
+                break;
+            case CURRENT:
+                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}"
+                        , userSender, BookingState.CURRENT);
+                Page<Booking> currentBookings = bookingRepository.
+                        getCurrentBookingForUser(userSender.getId(), PageRequest.of(from, size));
+                userBooking = setBookingsDtoForUser(currentBookings.toList());
+                break;
+            case WAITING:
+                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}"
+                        , userSender, BookingState.WAITING);
+                Page<Booking> waitingBookings = bookingRepository
+                        .getBookingsByBookerIdAndStatus(userSender.getId(), Status.WAITING
+                                , PageRequest.of(from, size));
+                userBooking = setBookingsDtoForUser(waitingBookings.toList());
+                break;
+            case REJECTED:
+                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}"
+                        , userSender, BookingState.REJECTED);
+                Page<Booking> rejectedBookings = bookingRepository
+                        .getBookingsByBookerIdAndStatus(userSender.getId(), Status.REJECTED
+                                , PageRequest.of(from, size));
+                userBooking = setBookingsDtoForUser(rejectedBookings.toList());
+                break;
+            case PAST:
+                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}"
+                        , userSender, BookingState.PAST);
+                Page<Booking> pastBookings = bookingRepository
+                        .getBookingsByBookerIdAndEndBefore(userSender.getId(), LocalDateTime.now()
+                                , PageRequest.of(from, size));
+                userBooking = setBookingsDtoForUser(pastBookings.toList());
                 break;
         }
         return userBooking;
@@ -210,8 +273,58 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public void deleteAllBooking() {
-        bookingRepository.deleteAll();
+    public Collection<BookingDto> getAllBookingForOwnerWithPagination(BookingState state, Integer ownerId, Integer from, Integer size) {
+        if (from < 0 || size <= 0 || size < from) {
+            log.warn("Пользователь ввел неправильные границы для пагинации");
+            throw new RequestError(HttpStatus.BAD_REQUEST, "Неверные границы пагинации");
+        }
+        from = from / size;
+        Collection<BookingDto> ownerBooking = new ArrayList<>();
+        User owner = userService.getUserById(ownerId);
+        switch (state) {
+            case ALL:
+                log.info("Владелец {} запросил список всех своих предметов", owner);
+                Page<Booking> bookings = bookingRepository
+                        .getBookingsByOwnerId(ownerId, PageRequest.of(from, size));
+                ownerBooking = setBookingsDtoForUser(bookings.toList());
+                break;
+            case FUTURE:
+                log.info("Владелец {} запросил список всех своих предметов со статусом {}"
+                        , owner, BookingState.FUTURE);
+                Page<Booking> futureBookings = bookingRepository
+                        .getFutureBookingForOwner(owner.getId(), PageRequest.of(from, size));
+                ownerBooking = setBookingsDtoForUser(futureBookings.toList());
+                break;
+            case CURRENT:
+                log.info("Владелец {} запросил список всех своих предметов со статусом {}"
+                        , owner, BookingState.FUTURE);
+                Page<Booking> currentBookings = bookingRepository
+                        .getCurrentBookingForOwner(owner.getId(), PageRequest.of(from, size));
+                ownerBooking = setBookingsDtoForUser(currentBookings.toList());
+                break;
+            case WAITING:
+                log.info("Владелец {} запросил список всех своих предметов со статусом {}"
+                        , owner, BookingState.WAITING);
+                Page<Booking> waitingBooking = bookingRepository
+                        .getBookingForOwnerByStatus(owner.getId(), Status.WAITING, PageRequest.of(from, size));
+                ownerBooking = setBookingsDtoForUser(waitingBooking.toList());
+                break;
+            case REJECTED:
+                log.info("Владелец {} запросил список всех своих предметов со статусом {}"
+                        , owner, BookingState.REJECTED);
+                Page<Booking> rejectedBooking = bookingRepository
+                        .getBookingForOwnerByStatus(owner.getId(), Status.REJECTED, PageRequest.of(from, size));
+                ownerBooking = setBookingsDtoForUser(rejectedBooking.toList());
+                break;
+            case PAST:
+                log.info("Владелец {} запросил список всех своих предметов со статусом {}"
+                        , owner, BookingState.PAST);
+                Page<Booking> pastBooking = bookingRepository
+                        .getPastBookingForByOwnerId(owner.getId(), LocalDateTime.now(), PageRequest.of(from, size));
+                ownerBooking = setBookingsDtoForUser(pastBooking.toList());
+                break;
+        }
+        return ownerBooking;
     }
 
     //Получаю из booking DTO, т.к. из репозитория возвращается только booking

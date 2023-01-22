@@ -44,13 +44,19 @@ public class ItemController {
     }
 
     @GetMapping
-    public Collection<ItemDto> getAllItemsOwner(@RequestHeader("X-Sharer-User-Id") Integer userId) {
-        return itemService.getAllItemsOwner(userId);
+    public Collection<ItemDto> getAllItemsOwner(@RequestParam(value = "from", required = false) Integer from
+            , @RequestParam(value = "size", required = false) Integer size
+            , @RequestHeader("X-Sharer-User-Id") Integer userId) {
+        if (from == null) return itemService.getAllItemsOwner(userId);
+        return itemService.getAllItemsWithPagination(userId, from, size);
     }
 
     @GetMapping("/search")
-    private Collection<Item> searchItemByText(@RequestHeader("X-Sharer-User-Id") Integer userId
+    public Collection<Item> searchItemByText(@RequestParam(value = "from", required = false) Integer from
+            , @RequestParam(value = "size", required = false) Integer size
+            , @RequestHeader("X-Sharer-User-Id") Integer userId
             , @RequestParam String text) {
-        return itemService.searchItemByText(userId, text);
+        if (from == null) return itemService.searchItemByText(userId, text);
+        return itemService.searchItemByTextWithPagination(userId, from, size, text);
     }
 }

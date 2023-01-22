@@ -2,6 +2,8 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
@@ -102,11 +104,40 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    public Collection<ItemDto> getAllItemsWithPagination(Integer userId, Integer from, Integer size) {
+        User user = userService.getUserById(userId);
+        Collection<ItemDto> itemDtoCollections = new ArrayList<>();
+        if (from < 0 || size <= 0 || size < from) {
+            log.warn("Пользователь ввел неправильные границы для пагинации");
+            throw new RequestError(HttpStatus.BAD_REQUEST, "Неверные границы пагинации");
+        }
+        from = from / size;
+        log.info("Получен запрос на вывод списка вещей пользователя {} с {} по {} страницу", user, from, size);
+        Page<Item> items = itemRepository.findItemsByOwnerId(userId, PageRequest.of(from, size));
+        items.forEach(item -> itemDtoCollections.add(getItemById(item.getId(), user.getId())));
+        return getSortedItemsList(itemDtoCollections, userId);
+    }
+
+    @Override
     public Collection<Item> searchItemByText(Integer userId, String text) {
         User user = userService.getUserById(userId);
         log.info("Получен запрос на поиск {} от пользователя {}", text, user);
         if (text.isEmpty()) return new ArrayList<>();
         return itemRepository.searchByText(text, true);
+    }
+
+    @Override
+    public Collection<Item> searchItemByTextWithPagination(Integer userId, Integer from, Integer size, String text) {
+        if (from < 0 || size <= 0 || size < from) {
+            log.warn("Пользователь ввел неправильные границы для пагинации");
+            throw new RequestError(HttpStatus.BAD_REQUEST, "Неверные границы пагинации");
+        }
+        from = from / size;
+        User user = userService.getUserById(userId);
+        log.info("Получен запрос на поиск {} от пользователя {}", text, user);
+        if (text.isEmpty()) return new ArrayList<>();
+        Page<Item> pageItem = itemRepository.searchByText(text, true, PageRequest.of(from, size));
+        return pageItem.toList();
     }
 
     @Override
@@ -131,7 +162,7 @@ public class ItemServiceImpl implements ItemService {
         }
         if (user == null) {
             log.warn("Ошибка при добавлении комментария, пользователь {} не найден", userId);
-            throw new RequestError(HttpStatus.BAD_REQUEST, "Вещь не найдена");
+            throw new RequestError(HttpStatus.BAD_REQUEST, "Пользователь не найден");
         }
         if (!checkUserIsBookerForItem(userId, itemId)) {
             log.warn("Ошибка при добавлении комментария, пользователь {} не брал в аренду вещь {}", user, item);
@@ -161,16 +192,6 @@ public class ItemServiceImpl implements ItemService {
             commentResponseList.add(CommentMapper.commentDtoToResponseDto(commentDto));
         }
         return commentResponseList;
-    }
-
-    @Override
-    public void deleteAllItems() {
-        itemRepository.deleteAll();
-    }
-
-    @Override
-    public void deleteAllComments() {
-        commentRepository.deleteAll();
     }
 
     private void checkUserIsOwner(Integer itemId, Integer userId) {

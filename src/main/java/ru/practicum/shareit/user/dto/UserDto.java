@@ -10,9 +10,9 @@ import javax.validation.constraints.NotNull;
 public class UserDto {
     private Integer id;
     @NotNull
-    private final String name;
+    private String name;
     @Email(groups = ValidUserUpdate.class)
     @Email
     @NotNull
-    private final String email;
+    private String email;
 }

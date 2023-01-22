@@ -16,7 +16,11 @@ public interface ItemService {
 
     Collection<ItemDto> getAllItemsOwner(Integer userId);
 
+    Collection<ItemDto> getAllItemsWithPagination(Integer userId, Integer from, Integer size);
+
     Collection<Item> searchItemByText(Integer userId, String text);
+
+    Collection<Item> searchItemByTextWithPagination(Integer userId, Integer from, Integer size, String text);
 
     void changeItemStatus(Integer itemId, Integer userId, boolean approved);
 
@@ -24,7 +28,4 @@ public interface ItemService {
 
     Collection<CommentResponseDto> getCommentList(Integer itemId);
 
-    void deleteAllItems();
-
-    void deleteAllComments();
 }

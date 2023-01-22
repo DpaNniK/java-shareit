@@ -24,7 +24,7 @@ public class BookingController {
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingDto replyToBooing(@RequestHeader("X-Sharer-User-Id") Integer ownerId
+    public BookingDto replyToBooking(@RequestHeader("X-Sharer-User-Id") Integer ownerId
             , @RequestParam boolean approved, @PathVariable Integer bookingId) {
         return bookingService.replyToBooking(ownerId, bookingId, approved);
     }
@@ -36,16 +36,20 @@ public class BookingController {
     }
 
     @GetMapping()
-    public Collection<BookingDto> getAllBookingsForUser(@RequestParam(value = "state"
-            , required = false, defaultValue = "ALL") BookingState state
+    public Collection<BookingDto> getAllBookingsForUser(@RequestParam(value = "from", required = false) Integer from
+            , @RequestParam(value = "size", required = false) Integer size
+            , @RequestParam(value = "state", required = false, defaultValue = "ALL") BookingState state
             , @RequestHeader("X-Sharer-User-Id") Integer userId) {
-        return bookingService.getAllBookingsForUser(state, userId);
+        if (from == null) return bookingService.getAllBookingsForUser(state, userId);
+        return bookingService.getAllBookingsForUserWithPagination(state, userId, from, size);
     }
 
-    @GetMapping( "/owner")
-    public Collection<BookingDto> getAllBookingForOwner(@RequestParam(value = "state"
-            , required = false, defaultValue = "ALL") BookingState state
+    @GetMapping("/owner")
+    public Collection<BookingDto> getAllBookingForOwner(@RequestParam(value = "from", required = false) Integer from
+            , @RequestParam(value = "size", required = false) Integer size
+            , @RequestParam(value = "state", required = false, defaultValue = "ALL") BookingState state
             , @RequestHeader("X-Sharer-User-Id") Integer ownerId) {
-        return bookingService.getAllBookingForOwner(state, ownerId);
+        if (from == null) return bookingService.getAllBookingForOwner(state, ownerId);
+        return bookingService.getAllBookingForOwnerWithPagination(state, ownerId, from, size);
     }
 }
