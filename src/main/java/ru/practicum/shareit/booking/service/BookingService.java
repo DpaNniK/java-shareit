@@ -17,12 +17,12 @@ public interface BookingService {
 
     Collection<BookingDto> getAllBookingsForUser(BookingState state, Integer userId);
 
-    Collection<BookingDto> getAllBookingsForUserWithPagination(BookingState state
-            , Integer userId, Integer from, Integer size);
+    Collection<BookingDto> getAllBookingsForUserWithPagination(BookingState state,
+                                                               Integer userId, Integer from, Integer size);
 
     Collection<BookingDto> getAllBookingForOwner(BookingState state, Integer ownerId);
 
-    Collection<BookingDto> getAllBookingForOwnerWithPagination(BookingState state
-            , Integer userId, Integer from, Integer size);
+    Collection<BookingDto> getAllBookingForOwnerWithPagination(BookingState state,
+                                                               Integer userId, Integer from, Integer size);
 
 }

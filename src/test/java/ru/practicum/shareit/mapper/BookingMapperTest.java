@@ -43,18 +43,12 @@ public class BookingMapperTest {
     public void bookingMapperToBookingDtoTest() {
         BookingDto bookingDtoResult = BookingMapper.toBookingDto(booking, item, user);
 
-        assertEquals(bookingDtoResult.getId(), booking.getId()
-                , "Неверно присвоен ID");
-        assertEquals(bookingDtoResult.getBooker().getId(), booking.getBookerId()
-                , "Неверно присвоен ID букера");
-        assertEquals(bookingDtoResult.getItem().getId(), booking.getItemId()
-                , "Неверно присвоен ID для вещи");
-        assertEquals(bookingDtoResult.getStatus(), booking.getStatus()
-                , "Неверно присвоен статус");
-        assertEquals(bookingDtoResult.getStart(), booking.getStart()
-                , "Неверно присвоено время начала аренды");
-        assertEquals(bookingDtoResult.getEnd(), booking.getEnd()
-                , "Неверно присвоено время окончания аренды");
+        assertEquals(bookingDtoResult.getId(), booking.getId(), "Неверно присвоен ID");
+        assertEquals(bookingDtoResult.getBooker().getId(), booking.getBookerId(), "Неверно присвоен ID букера");
+        assertEquals(bookingDtoResult.getItem().getId(), booking.getItemId(), "Неверно присвоен ID для вещи");
+        assertEquals(bookingDtoResult.getStatus(), booking.getStatus(), "Неверно присвоен статус");
+        assertEquals(bookingDtoResult.getStart(), booking.getStart(), "Неверно присвоено время начала аренды");
+        assertEquals(bookingDtoResult.getEnd(), booking.getEnd(), "Неверно присвоено время окончания аренды");
     }
 
     @Test
@@ -62,18 +56,17 @@ public class BookingMapperTest {
         BookingDto bookingDtoResult = BookingMapper.toBookingDto(booking, item, user);
         Booking bookingResult = BookingMapper.toBooking(bookingDtoResult);
 
-        assertEquals(bookingResult.getId(), bookingDtoResult.getId()
-                , "Неверно присвоен ID");
-        assertEquals(bookingResult.getBookerId(), bookingDtoResult.getBooker().getId()
-                , "Неверно присвоен ID букера");
+        assertEquals(bookingResult.getId(), bookingDtoResult.getId(), "Неверно присвоен ID");
+        assertEquals(bookingResult.getBookerId(), bookingDtoResult.getBooker().getId(),
+                "Неверно присвоен ID букера");
         assertEquals(bookingResult.getItemId(), bookingDtoResult.getItem().getId(),
                 "Неверно присвоен ID для вещи");
-        assertEquals(bookingResult.getStatus(), bookingDtoResult.getStatus()
-                , "Неверно присвоен статус");
-        assertEquals(bookingResult.getStart(), bookingDtoResult.getStart()
-                , "Неверно присвоено время начала аренды");
-        assertEquals(bookingResult.getEnd(), bookingDtoResult.getEnd()
-                , "Неверно присвоено время окончания аренды");
+        assertEquals(bookingResult.getStatus(), bookingDtoResult.getStatus(),
+                "Неверно присвоен статус");
+        assertEquals(bookingResult.getStart(), bookingDtoResult.getStart(),
+                "Неверно присвоено время начала аренды");
+        assertEquals(bookingResult.getEnd(), bookingDtoResult.getEnd(),
+                "Неверно присвоено время окончания аренды");
     }
 }
 

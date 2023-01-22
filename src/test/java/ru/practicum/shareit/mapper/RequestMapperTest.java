@@ -44,8 +44,8 @@ public class RequestMapperTest {
     public void toRequestDtoTest() {
         RequestDto requestDto = RequestMapper.toRequestDto(request, new ArrayList<>());
         assertEquals(requestDto.getId(), request.getId());
-        assertEquals(requestDto.getCreated().truncatedTo(ChronoUnit.MINUTES)
-                , request.getCreated().truncatedTo(ChronoUnit.MINUTES));
+        assertEquals(requestDto.getCreated().truncatedTo(ChronoUnit.MINUTES),
+                request.getCreated().truncatedTo(ChronoUnit.MINUTES));
         assertEquals(requestDto.getDescription(), request.getDescription());
     }
 

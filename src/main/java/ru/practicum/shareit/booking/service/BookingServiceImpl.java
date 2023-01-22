@@ -49,8 +49,8 @@ public class BookingServiceImpl implements BookingService {
         }
         if (Objects.equals(item.getOwner().getId(), owner.getId())) {
             log.warn("Ошибка при аренде вещи {}, пользователь не может арендовать собственную вещь", item);
-            throw new RequestError(HttpStatus.NOT_FOUND
-                    , "Пользователь не может арендовать собственную вещь");
+            throw new RequestError(HttpStatus.NOT_FOUND,
+                    "Пользователь не может арендовать собственную вещь");
         }
         log.info("Создан запрос от пользователя {} на аренду вещи {}", owner, item);
         booking.setStatus(Status.WAITING);
@@ -68,8 +68,8 @@ public class BookingServiceImpl implements BookingService {
         }
         if (!Objects.equals(bookingDto.getStatus(), Status.WAITING)) {
             log.warn("Невозможно изменить статус аренды. Статус аренды {}", bookingDto.getStatus());
-            throw new RequestError(HttpStatus.BAD_REQUEST
-                    , "Невозможно изменить статус аренды. Аренда уже закрыта/отклонена/принята");
+            throw new RequestError(HttpStatus.BAD_REQUEST,
+                    "Невозможно изменить статус аренды. Аренда уже закрыта/отклонена/принята");
         }
         Booking booking = BookingMapper.toBooking(bookingDto);
         if (approved) {
@@ -104,8 +104,8 @@ public class BookingServiceImpl implements BookingService {
             log.warn("Ошибка. Запрос аренды под id {} не найден", bookingId);
             throw new RequestError(HttpStatus.NOT_FOUND, "Запрос на аренду не найден");
         }
-        log.info("Пользователь с id {} запросил информацию о запросе аренды с id {}"
-                , userId, bookingId);
+        log.info("Пользователь с id {} запросил информацию о запросе аренды с id {}",
+                userId, bookingId);
         return getBookingById(bookingId);
     }
 
@@ -116,43 +116,43 @@ public class BookingServiceImpl implements BookingService {
         User userSender = userService.getUserById(userId);
         switch (state) {
             case ALL:
-                log.info("Пользователь {} запросил список всех арендованных предметов"
-                        , userSender);
+                log.info("Пользователь {} запросил список всех арендованных предметов",
+                        userSender);
                 Collection<Booking> bookings = bookingRepository
                         .getBookingsByBookerIdOrderByStartDesc(userSender.getId());
                 userBooking = setBookingsDtoForUser(bookings);
                 break;
             case FUTURE:
-                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}"
-                        , userSender, BookingState.FUTURE);
+                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}",
+                        userSender, BookingState.FUTURE);
                 Collection<Booking> futureBookings = bookingRepository
                         .getFutureBookingsForUser(userSender.getId(), LocalDateTime.now());
                 userBooking = setBookingsDtoForUser(futureBookings);
                 break;
             case CURRENT:
-                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}"
-                        , userSender, BookingState.CURRENT);
+                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}",
+                        userSender, BookingState.CURRENT);
                 Collection<Booking> currentBookings = bookingRepository.
                         getCurrentBookingForUser(userSender.getId());
                 userBooking = setBookingsDtoForUser(currentBookings);
                 break;
             case WAITING:
-                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}"
-                        , userSender, BookingState.WAITING);
+                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}",
+                        userSender, BookingState.WAITING);
                 Collection<Booking> waitingBookings = bookingRepository
                         .getBookingsByBookerIdAndStatus(userSender.getId(), Status.WAITING);
                 userBooking = setBookingsDtoForUser(waitingBookings);
                 break;
             case REJECTED:
-                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}"
-                        , userSender, BookingState.REJECTED);
+                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}",
+                        userSender, BookingState.REJECTED);
                 Collection<Booking> rejectedBookings = bookingRepository
                         .getBookingsByBookerIdAndStatus(userSender.getId(), Status.REJECTED);
                 userBooking = setBookingsDtoForUser(rejectedBookings);
                 break;
             case PAST:
-                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}"
-                        , userSender, BookingState.PAST);
+                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}",
+                        userSender, BookingState.PAST);
                 Collection<Booking> pastBookings = bookingRepository
                         .getBookingsByBookerIdAndEndBefore(userSender.getId(), LocalDateTime.now());
                 userBooking = setBookingsDtoForUser(pastBookings);
@@ -162,8 +162,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Collection<BookingDto> getAllBookingsForUserWithPagination(BookingState state, Integer userId, Integer from
-            , Integer size) {
+    public Collection<BookingDto> getAllBookingsForUserWithPagination(BookingState state, Integer userId, Integer from,
+                                                                      Integer size) {
         Collection<BookingDto> userBooking = new ArrayList<>();
         //Проверка, что юзер существует
         if (from < 0 || size <= 0 || size < from) {
@@ -171,51 +171,51 @@ public class BookingServiceImpl implements BookingService {
             throw new RequestError(HttpStatus.BAD_REQUEST, "Неверные границы пагинации");
         }
         User userSender = userService.getUserById(userId);
-        from = from / size ;
+        from = from / size;
         switch (state) {
             case ALL:
-                log.info("Пользователь {} запросил список всех арендованных предметов"
-                        , userSender);
+                log.info("Пользователь {} запросил список всех арендованных предметов",
+                        userSender);
                 Page<Booking> bookings = bookingRepository
                         .getBookingsByBookerIdOrderByStartDesc(userId, PageRequest.of(from, size));
                 userBooking = setBookingsDtoForUser(bookings.toList());
                 break;
             case FUTURE:
-                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}"
-                        , userSender, BookingState.FUTURE);
+                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}",
+                        userSender, BookingState.FUTURE);
                 Page<Booking> futureBookings = bookingRepository
                         .getFutureBookingsForUser(userSender.getId(), LocalDateTime.now(), PageRequest.of(from, size));
                 userBooking = setBookingsDtoForUser(futureBookings.toList());
                 break;
             case CURRENT:
-                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}"
-                        , userSender, BookingState.CURRENT);
-                Page<Booking> currentBookings = bookingRepository.
-                        getCurrentBookingForUser(userSender.getId(), PageRequest.of(from, size));
+                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}",
+                        userSender, BookingState.CURRENT);
+                Page<Booking> currentBookings = bookingRepository
+                        .getCurrentBookingForUser(userSender.getId(), PageRequest.of(from, size));
                 userBooking = setBookingsDtoForUser(currentBookings.toList());
                 break;
             case WAITING:
-                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}"
-                        , userSender, BookingState.WAITING);
+                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}",
+                        userSender, BookingState.WAITING);
                 Page<Booking> waitingBookings = bookingRepository
-                        .getBookingsByBookerIdAndStatus(userSender.getId(), Status.WAITING
-                                , PageRequest.of(from, size));
+                        .getBookingsByBookerIdAndStatus(userSender.getId(), Status.WAITING,
+                                PageRequest.of(from, size));
                 userBooking = setBookingsDtoForUser(waitingBookings.toList());
                 break;
             case REJECTED:
-                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}"
-                        , userSender, BookingState.REJECTED);
+                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}",
+                        userSender, BookingState.REJECTED);
                 Page<Booking> rejectedBookings = bookingRepository
-                        .getBookingsByBookerIdAndStatus(userSender.getId(), Status.REJECTED
-                                , PageRequest.of(from, size));
+                        .getBookingsByBookerIdAndStatus(userSender.getId(), Status.REJECTED,
+                                PageRequest.of(from, size));
                 userBooking = setBookingsDtoForUser(rejectedBookings.toList());
                 break;
             case PAST:
-                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}"
-                        , userSender, BookingState.PAST);
+                log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}",
+                        userSender, BookingState.PAST);
                 Page<Booking> pastBookings = bookingRepository
-                        .getBookingsByBookerIdAndEndBefore(userSender.getId(), LocalDateTime.now()
-                                , PageRequest.of(from, size));
+                        .getBookingsByBookerIdAndEndBefore(userSender.getId(), LocalDateTime.now(),
+                                PageRequest.of(from, size));
                 userBooking = setBookingsDtoForUser(pastBookings.toList());
                 break;
         }
@@ -234,36 +234,36 @@ public class BookingServiceImpl implements BookingService {
                 ownerBooking = setBookingsDtoForUser(bookings);
                 break;
             case FUTURE:
-                log.info("Владелец {} запросил список всех своих предметов со статусом {}"
-                        , owner, BookingState.FUTURE);
+                log.info("Владелец {} запросил список всех своих предметов со статусом {}",
+                        owner, BookingState.FUTURE);
                 Collection<Booking> futureBookings = bookingRepository
                         .getFutureBookingForOwner(owner.getId());
                 ownerBooking = setBookingsDtoForUser(futureBookings);
                 break;
             case CURRENT:
-                log.info("Владелец {} запросил список всех своих предметов со статусом {}"
-                        , owner, BookingState.FUTURE);
+                log.info("Владелец {} запросил список всех своих предметов со статусом {}",
+                        owner, BookingState.FUTURE);
                 Collection<Booking> currentBookings = bookingRepository
                         .getCurrentBookingForOwner(owner.getId());
                 ownerBooking = setBookingsDtoForUser(currentBookings);
                 break;
             case WAITING:
-                log.info("Владелец {} запросил список всех своих предметов со статусом {}"
-                        , owner, BookingState.WAITING);
+                log.info("Владелец {} запросил список всех своих предметов со статусом {}",
+                        owner, BookingState.WAITING);
                 Collection<Booking> waitingBooking = bookingRepository
                         .getBookingForOwnerByStatus(owner.getId(), Status.WAITING);
                 ownerBooking = setBookingsDtoForUser(waitingBooking);
                 break;
             case REJECTED:
-                log.info("Владелец {} запросил список всех своих предметов со статусом {}"
-                        , owner, BookingState.REJECTED);
+                log.info("Владелец {} запросил список всех своих предметов со статусом {}",
+                        owner, BookingState.REJECTED);
                 Collection<Booking> rejectedBooking = bookingRepository
                         .getBookingForOwnerByStatus(owner.getId(), Status.REJECTED);
                 ownerBooking = setBookingsDtoForUser(rejectedBooking);
                 break;
             case PAST:
-                log.info("Владелец {} запросил список всех своих предметов со статусом {}"
-                        , owner, BookingState.PAST);
+                log.info("Владелец {} запросил список всех своих предметов со статусом {}",
+                        owner, BookingState.PAST);
                 Collection<Booking> pastBooking = bookingRepository
                         .getPastBookingForByOwnerId(owner.getId(), LocalDateTime.now());
                 ownerBooking = setBookingsDtoForUser(pastBooking);
@@ -289,36 +289,36 @@ public class BookingServiceImpl implements BookingService {
                 ownerBooking = setBookingsDtoForUser(bookings.toList());
                 break;
             case FUTURE:
-                log.info("Владелец {} запросил список всех своих предметов со статусом {}"
-                        , owner, BookingState.FUTURE);
+                log.info("Владелец {} запросил список всех своих предметов со статусом {}",
+                        owner, BookingState.FUTURE);
                 Page<Booking> futureBookings = bookingRepository
                         .getFutureBookingForOwner(owner.getId(), PageRequest.of(from, size));
                 ownerBooking = setBookingsDtoForUser(futureBookings.toList());
                 break;
             case CURRENT:
-                log.info("Владелец {} запросил список всех своих предметов со статусом {}"
-                        , owner, BookingState.FUTURE);
+                log.info("Владелец {} запросил список всех своих предметов со статусом {}",
+                        owner, BookingState.FUTURE);
                 Page<Booking> currentBookings = bookingRepository
                         .getCurrentBookingForOwner(owner.getId(), PageRequest.of(from, size));
                 ownerBooking = setBookingsDtoForUser(currentBookings.toList());
                 break;
             case WAITING:
-                log.info("Владелец {} запросил список всех своих предметов со статусом {}"
-                        , owner, BookingState.WAITING);
+                log.info("Владелец {} запросил список всех своих предметов со статусом {}",
+                        owner, BookingState.WAITING);
                 Page<Booking> waitingBooking = bookingRepository
                         .getBookingForOwnerByStatus(owner.getId(), Status.WAITING, PageRequest.of(from, size));
                 ownerBooking = setBookingsDtoForUser(waitingBooking.toList());
                 break;
             case REJECTED:
-                log.info("Владелец {} запросил список всех своих предметов со статусом {}"
-                        , owner, BookingState.REJECTED);
+                log.info("Владелец {} запросил список всех своих предметов со статусом {}",
+                        owner, BookingState.REJECTED);
                 Page<Booking> rejectedBooking = bookingRepository
                         .getBookingForOwnerByStatus(owner.getId(), Status.REJECTED, PageRequest.of(from, size));
                 ownerBooking = setBookingsDtoForUser(rejectedBooking.toList());
                 break;
             case PAST:
-                log.info("Владелец {} запросил список всех своих предметов со статусом {}"
-                        , owner, BookingState.PAST);
+                log.info("Владелец {} запросил список всех своих предметов со статусом {}",
+                        owner, BookingState.PAST);
                 Page<Booking> pastBooking = bookingRepository
                         .getPastBookingForByOwnerId(owner.getId(), LocalDateTime.now(), PageRequest.of(from, size));
                 ownerBooking = setBookingsDtoForUser(pastBooking.toList());

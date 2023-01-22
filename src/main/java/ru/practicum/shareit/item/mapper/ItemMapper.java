@@ -24,8 +24,8 @@ public class ItemMapper {
         return item;
     }
 
-    public static ItemDto toItemDto(Item item, User owner, Collection<Booking> bookingList
-            , Collection<CommentResponseDto> commentResponseList) {
+    public static ItemDto toItemDto(Item item, User owner, Collection<Booking> bookingList,
+                                    Collection<CommentResponseDto> commentResponseList) {
         ItemDto itemDto = new ItemDto();
         itemDto.setName(item.getName());
         itemDto.setDescription(item.getDescription());
@@ -37,7 +37,7 @@ public class ItemMapper {
             itemDto.setLastBooking(new ArrayList<>(bookingList).get(0));
             itemDto.setNextBooking(new ArrayList<>(bookingList).get(1));
         }
-        if(commentResponseList.size()!= 0) {
+        if (commentResponseList.size() != 0) {
             itemDto.setComments(commentResponseList);
         } else {
             itemDto.setComments(new ArrayList<>());

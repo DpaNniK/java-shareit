@@ -61,9 +61,9 @@ public class ItemRequestServiceIntegrationTest {
                 .hasValueSatisfying(requestDto -> assertThat(requestDto)
                         .hasFieldOrPropertyWithValue("description", request.getDescription()));
 
-        assertEquals(requestDtoCreated.getCreated().truncatedTo(ChronoUnit.SECONDS)
-                , requestDtoCreated.getCreated().truncatedTo(ChronoUnit.SECONDS)
-                , "Неверно присвоено время старта");
+        assertEquals(requestDtoCreated.getCreated().truncatedTo(ChronoUnit.SECONDS),
+                requestDtoCreated.getCreated().truncatedTo(ChronoUnit.SECONDS),
+                "Неверно присвоено время старта");
     }
 
     @Test
@@ -75,7 +75,7 @@ public class ItemRequestServiceIntegrationTest {
         request.setDescription("desc");
         itemRequestService.createItemRequest(user.getId(), request);
 
-        Collection<RequestDto> requestDtos  = itemRequestService.getItemRequestForUser(user.getId());
+        Collection<RequestDto> requestDtos = itemRequestService.getItemRequestForUser(user.getId());
         assertEquals(requestDtos.size(), 1);
     }
 
@@ -92,12 +92,12 @@ public class ItemRequestServiceIntegrationTest {
                 .getAllRequestItems();
 
         assertEquals(requestDtoWithPagination.size(), 1, "Неверное значение списка пагинации");
-        assertEquals(new ArrayList<>(requestDtoWithPagination).get(0).getId(), requestDtoCreated.getId()
-                , "Неверное значение id");
-        assertEquals(new ArrayList<>(requestDtoWithPagination).get(0).getItems()
-                , requestDtoCreated.getItems(), "Неверно присвоен список вещей");
-        assertEquals(new ArrayList<>(requestDtoWithPagination).get(0).getDescription()
-                , requestDtoCreated.getDescription(), "Неверно присвоено описание");
+        assertEquals(new ArrayList<>(requestDtoWithPagination).get(0).getId(), requestDtoCreated.getId(),
+                "Неверное значение id");
+        assertEquals(new ArrayList<>(requestDtoWithPagination).get(0).getItems(),
+                requestDtoCreated.getItems(), "Неверно присвоен список вещей");
+        assertEquals(new ArrayList<>(requestDtoWithPagination).get(0).getDescription(),
+                requestDtoCreated.getDescription(), "Неверно присвоено описание");
     }
 
     @Test
@@ -110,12 +110,12 @@ public class ItemRequestServiceIntegrationTest {
         RequestDto requestDtoCreated = itemRequestService.createItemRequest(user.getId(), request);
         RequestDto resultRequestDto = itemRequestService.getRequestById(request.getId(), user.getId());
 
-        assertEquals(resultRequestDto.getId(), requestDtoCreated.getId()
-                , "Неверное значение id");
-        assertEquals(resultRequestDto.getItems()
-                , requestDtoCreated.getItems(), "Неверно присвоен список вещей");
-        assertEquals(resultRequestDto.getDescription()
-                , requestDtoCreated.getDescription(), "Неверно присвоено описание");
+        assertEquals(resultRequestDto.getId(), requestDtoCreated.getId(),
+                "Неверное значение id");
+        assertEquals(resultRequestDto.getItems(), requestDtoCreated.getItems(),
+                "Неверно присвоен список вещей");
+        assertEquals(resultRequestDto.getDescription(),
+                requestDtoCreated.getDescription(), "Неверно присвоено описание");
     }
 
     @Test

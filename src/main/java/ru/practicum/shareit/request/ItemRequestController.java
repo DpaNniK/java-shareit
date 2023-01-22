@@ -17,8 +17,8 @@ public class ItemRequestController {
     private final ItemRequestService itemRequestService;
 
     @PostMapping
-    public RequestDto createItemRequest(@RequestHeader("X-Sharer-User-Id") Integer creatorId
-            , @RequestBody @Valid Request request) {
+    public RequestDto createItemRequest(@RequestHeader("X-Sharer-User-Id") Integer creatorId,
+                                        @RequestBody @Valid Request request) {
         return itemRequestService.createItemRequest(creatorId, request);
     }
 
@@ -28,16 +28,16 @@ public class ItemRequestController {
     }
 
     @GetMapping("/all")
-    public Collection<RequestDto> getItemsWithPagination(@RequestParam(value = "from", required = false) Integer from
-            , @RequestParam(value = "size", required = false) Integer size
-            , @RequestHeader("X-Sharer-User-Id") Integer userId) {
+    public Collection<RequestDto> getItemsWithPagination(@RequestParam(value = "from", required = false) Integer from,
+                                                         @RequestParam(value = "size", required = false) Integer size,
+                                                         @RequestHeader("X-Sharer-User-Id") Integer userId) {
         if (from == null) return itemRequestService.getAllRequestItems();
         return itemRequestService.getItemsWithPagination(userId, from, size);
     }
 
     @GetMapping("/{requestId}")
-    public RequestDto getRequestById(@RequestHeader("X-Sharer-User-Id") Integer userId
-            , @PathVariable Integer requestId) {
+    public RequestDto getRequestById(@RequestHeader("X-Sharer-User-Id") Integer userId,
+                                     @PathVariable Integer requestId) {
         return itemRequestService.getRequestById(requestId, userId);
     }
 }

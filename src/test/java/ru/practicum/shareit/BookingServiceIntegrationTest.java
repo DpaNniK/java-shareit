@@ -66,12 +66,10 @@ public class BookingServiceIntegrationTest {
                                 .hasFieldOrPropertyWithValue("booker", user)
                                 .hasFieldOrPropertyWithValue("status", booking.getStatus())
                 );
-        assertEquals(bookingDtoCreated.getStart().truncatedTo(ChronoUnit.SECONDS)
-                , booking.getStart().truncatedTo(ChronoUnit.SECONDS)
-                , "Неверно присвоено время старта");
-        assertEquals(bookingDtoCreated.getEnd().truncatedTo(ChronoUnit.SECONDS)
-                , booking.getEnd().truncatedTo(ChronoUnit.SECONDS)
-                , "Неверно присвоено время завершения");
+        assertEquals(bookingDtoCreated.getStart().truncatedTo(ChronoUnit.SECONDS),
+                booking.getStart().truncatedTo(ChronoUnit.SECONDS), "Неверно присвоено время старта");
+        assertEquals(bookingDtoCreated.getEnd().truncatedTo(ChronoUnit.SECONDS),
+                booking.getEnd().truncatedTo(ChronoUnit.SECONDS), "Неверно присвоено время завершения");
     }
 
     @Test
@@ -89,8 +87,7 @@ public class BookingServiceIntegrationTest {
         assertThat(bookingOptional)
                 .isPresent()
                 .hasValueSatisfying(bookingDto1 ->
-                        assertThat(bookingDto1).hasFieldOrPropertyWithValue("status"
-                                , Status.APPROVED)
+                        assertThat(bookingDto1).hasFieldOrPropertyWithValue("status", Status.APPROVED)
                 );
     }
 
@@ -109,8 +106,7 @@ public class BookingServiceIntegrationTest {
         assertThat(bookingOptional)
                 .isPresent()
                 .hasValueSatisfying(bookingDto1 ->
-                        assertThat(bookingDto1).hasFieldOrPropertyWithValue("status"
-                                , Status.REJECTED)
+                        assertThat(bookingDto1).hasFieldOrPropertyWithValue("status", Status.REJECTED)
                 );
     }
 
@@ -231,8 +227,8 @@ public class BookingServiceIntegrationTest {
         User user = userService.createUser(createUserDto("иван", "yand@yandex.ru"));
         Booking booking = createBooking(item, user);
         bookingService.createBooking(booking);
-        Collection<BookingDto> bookings = bookingService.
-                getAllBookingsForUserWithPagination(BookingState.ALL, user.getId(), 0, 1);
+        Collection<BookingDto> bookings = bookingService
+                .getAllBookingsForUserWithPagination(BookingState.ALL, user.getId(), 0, 1);
 
         assertEquals(bookings.size(), 1, "Неверно получен список");
     }
@@ -247,8 +243,8 @@ public class BookingServiceIntegrationTest {
         booking.setStart(LocalDateTime.now().plusDays(5));
         booking.setEnd(LocalDateTime.now().plusDays(6));
         bookingService.createBooking(booking);
-        Collection<BookingDto> bookings = bookingService.
-                getAllBookingsForUserWithPagination(BookingState.FUTURE, user.getId(), 0, 1);
+        Collection<BookingDto> bookings = bookingService
+                .getAllBookingsForUserWithPagination(BookingState.FUTURE, user.getId(), 0, 1);
 
         assertEquals(bookings.size(), 1, "Неверно получен список");
     }
@@ -262,8 +258,8 @@ public class BookingServiceIntegrationTest {
         Booking booking = createBooking(item, user);
         booking.setStatus(Status.WAITING);
         bookingService.createBooking(booking);
-        Collection<BookingDto> bookings = bookingService.
-                getAllBookingsForUserWithPagination(BookingState.WAITING, user.getId(), 0, 1);
+        Collection<BookingDto> bookings = bookingService
+                .getAllBookingsForUserWithPagination(BookingState.WAITING, user.getId(), 0, 1);
 
         assertEquals(bookings.size(), 1, "Неверно получен список");
     }
@@ -324,8 +320,8 @@ public class BookingServiceIntegrationTest {
         User user = userService.createUser(createUserDto("иван", "yand@yandex.ru"));
         Booking booking = createBooking(item, user);
         bookingService.createBooking(booking);
-        Collection<BookingDto> bookings = bookingService.
-                getAllBookingForOwner(BookingState.ALL, owner.getId());
+        Collection<BookingDto> bookings = bookingService
+                .getAllBookingForOwner(BookingState.ALL, owner.getId());
 
         assertEquals(bookings.size(), 1, "Неверно получен список");
     }
@@ -354,8 +350,8 @@ public class BookingServiceIntegrationTest {
         Booking booking = createBooking(item, user);
         booking.setStatus(Status.WAITING);
         bookingService.createBooking(booking);
-        Collection<BookingDto> bookings = bookingService.
-                getAllBookingForOwner(BookingState.WAITING, owner.getId());
+        Collection<BookingDto> bookings = bookingService
+                .getAllBookingForOwner(BookingState.WAITING, owner.getId());
 
         assertEquals(bookings.size(), 1, "Неверно получен список");
     }
@@ -416,8 +412,8 @@ public class BookingServiceIntegrationTest {
         User user = userService.createUser(createUserDto("иван", "yand@yandex.ru"));
         Booking booking = createBooking(item, user);
         bookingService.createBooking(booking);
-        Collection<BookingDto> bookings = bookingService.
-                getAllBookingForOwnerWithPagination(BookingState.ALL, owner.getId(), 0, 1);
+        Collection<BookingDto> bookings = bookingService
+                .getAllBookingForOwnerWithPagination(BookingState.ALL, owner.getId(), 0, 1);
 
         assertEquals(bookings.size(), 1, "Неверно получен список");
     }
@@ -432,8 +428,8 @@ public class BookingServiceIntegrationTest {
         booking.setStart(LocalDateTime.now().plusDays(5));
         booking.setEnd(LocalDateTime.now().plusDays(6));
         bookingService.createBooking(booking);
-        Collection<BookingDto> bookings = bookingService.
-                getAllBookingForOwnerWithPagination(BookingState.FUTURE, owner.getId(), 0, 1);
+        Collection<BookingDto> bookings = bookingService
+                .getAllBookingForOwnerWithPagination(BookingState.FUTURE, owner.getId(), 0, 1);
 
         assertEquals(bookings.size(), 1, "Неверно получен список");
     }
@@ -447,8 +443,8 @@ public class BookingServiceIntegrationTest {
         Booking booking = createBooking(item, user);
         booking.setStatus(Status.WAITING);
         bookingService.createBooking(booking);
-        Collection<BookingDto> bookings = bookingService.
-                getAllBookingForOwnerWithPagination(BookingState.WAITING, owner.getId(), 0, 1);
+        Collection<BookingDto> bookings = bookingService
+                .getAllBookingForOwnerWithPagination(BookingState.WAITING, owner.getId(), 0, 1);
 
         assertEquals(bookings.size(), 1, "Неверно получен список");
     }

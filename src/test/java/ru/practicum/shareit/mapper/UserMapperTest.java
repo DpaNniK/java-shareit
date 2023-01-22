@@ -20,10 +20,10 @@ public class UserMapperTest {
     }
 
     @Test
-    public void toUserTest(){
-       User user = UserMapper.toUser(userDto);
-       assertEquals(user.getId(), userDto.getId());
-       assertEquals(user.getName(), userDto.getName());
-       assertEquals(user.getEmail(), userDto.getEmail());
+    public void toUserTest() {
+        User user = UserMapper.toUser(userDto);
+        assertEquals(user.getId(), userDto.getId());
+        assertEquals(user.getName(), userDto.getName());
+        assertEquals(user.getEmail(), userDto.getEmail());
     }
 }

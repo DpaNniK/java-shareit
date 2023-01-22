@@ -87,8 +87,8 @@ public class ItemServiceImpl implements ItemService {
         log.info("Пользователь посмотрел информацию о предмете {}", itemId);
         User user = userService.getUserById(item.getOwnerId());
         if (Objects.equals(item.getOwnerId(), userId)) {
-            return ItemMapper.toItemDto(item, user
-                    , bookingRepository.getBookingsByItemIdOrderByStartAsc(itemId), getCommentList(itemId));
+            return ItemMapper.toItemDto(item, user,
+                    bookingRepository.getBookingsByItemIdOrderByStartAsc(itemId), getCommentList(itemId));
         }
         return ItemMapper.toItemDto(item, user, new ArrayList<>(), getCommentList(itemId));
     }
@@ -197,13 +197,13 @@ public class ItemServiceImpl implements ItemService {
     private void checkUserIsOwner(Integer itemId, Integer userId) {
         Item resultItem = itemRepository.findById(itemId).orElse(null);
         if (resultItem == null) {
-            log.warn("Невозможно обновить информацию о предмете. Вещь с id = {} не найдена"
-                    , itemId);
+            log.warn("Невозможно обновить информацию о предмете. Вещь с id = {} не найдена",
+                    itemId);
             throw new RequestError(HttpStatus.NOT_FOUND, "Вещь не найдена");
         }
         if (!Objects.equals(resultItem.getOwnerId(), userId)) {
-            log.warn("Невозможно обновить информацию о предмете. Пользователь {} не является владельцем вещи {}"
-                    , userId, itemId);
+            log.warn("Невозможно обновить информацию о предмете. Пользователь {} не является владельцем вещи {}",
+                    userId, itemId);
             throw new RequestError(HttpStatus.NOT_FOUND, "Пользователь не является владельцем вещи");
         }
     }

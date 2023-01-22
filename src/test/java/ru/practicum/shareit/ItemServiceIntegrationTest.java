@@ -73,8 +73,8 @@ class ItemServiceIntegrationTest {
         Item oldItem = itemService.createItem(user.getId(), itemDto);
         itemDto.setName("newName");
 
-        Optional<Item> itemOptional = Optional.ofNullable(itemService.updateItem(oldItem.getId()
-                , user.getId(), itemDto));
+        Optional<Item> itemOptional = Optional.ofNullable(itemService.updateItem(oldItem.getId(),
+                user.getId(), itemDto));
 
         assertThat(itemOptional)
                 .isPresent()
@@ -95,8 +95,8 @@ class ItemServiceIntegrationTest {
         itemDto.setName(null);
         itemDto.setDescription(null);
         itemDto.setAvailable(false);
-        Optional<Item> itemOptional = Optional.ofNullable(itemService.updateItem(oldItem.getId()
-                , user.getId(), itemDto));
+        Optional<Item> itemOptional = Optional.ofNullable(itemService.updateItem(oldItem.getId(),
+                user.getId(), itemDto));
 
         assertThat(itemOptional)
                 .isPresent()
@@ -117,8 +117,8 @@ class ItemServiceIntegrationTest {
         itemDto.setName("new name");
         itemDto.setDescription(null);
         itemDto.setAvailable(null);
-        Optional<Item> itemOptional = Optional.ofNullable(itemService.updateItem(oldItem.getId()
-                , user.getId(), itemDto));
+        Optional<Item> itemOptional = Optional.ofNullable(itemService.updateItem(oldItem.getId(),
+                user.getId(), itemDto));
 
         assertThat(itemOptional)
                 .isPresent()
@@ -139,8 +139,8 @@ class ItemServiceIntegrationTest {
         itemDto.setName(null);
         itemDto.setDescription("new des");
         itemDto.setAvailable(null);
-        Optional<Item> itemOptional = Optional.ofNullable(itemService.updateItem(oldItem.getId()
-                , user.getId(), itemDto));
+        Optional<Item> itemOptional = Optional.ofNullable(itemService.updateItem(oldItem.getId(),
+                user.getId(), itemDto));
 
         assertThat(itemOptional)
                 .isPresent()
