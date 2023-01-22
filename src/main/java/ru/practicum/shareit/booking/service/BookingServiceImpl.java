@@ -132,8 +132,7 @@ public class BookingServiceImpl implements BookingService {
             case CURRENT:
                 log.info("Пользователь {} запросил список всех арендованных предметов со статусом {}",
                         userSender, BookingState.CURRENT);
-                Collection<Booking> currentBookings = bookingRepository.
-                        getCurrentBookingForUser(userSender.getId());
+                Collection<Booking> currentBookings = bookingRepository.getCurrentBookingForUser(userSender.getId());
                 userBooking = setBookingsDtoForUser(currentBookings);
                 break;
             case WAITING:
