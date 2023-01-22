@@ -22,5 +22,7 @@ public class Request {
     @NotNull
     private String description;
     private Integer requestorId;
-    private LocalDateTime created;
+
+    @Column(name = "created", nullable = false)
+    private LocalDateTime created = LocalDateTime.now();
 }

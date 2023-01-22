@@ -7,7 +7,6 @@ import ru.practicum.shareit.request.model.Request;
 import ru.practicum.shareit.request.service.ItemRequestService;
 
 import javax.validation.Valid;
-import java.time.LocalDateTime;
 import java.util.Collection;
 
 @RestController
@@ -20,7 +19,6 @@ public class ItemRequestController {
     @PostMapping
     public RequestDto createItemRequest(@RequestHeader("X-Sharer-User-Id") Integer creatorId,
                                         @RequestBody @Valid Request request) {
-        request.setCreated(LocalDateTime.now());
         return itemRequestService.createItemRequest(creatorId, request);
     }
 

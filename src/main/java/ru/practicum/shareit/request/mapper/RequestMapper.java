@@ -6,7 +6,6 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.RequestDto;
 import ru.practicum.shareit.request.model.Request;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -15,7 +14,7 @@ public class RequestMapper {
     public static RequestDto toRequestDto(Request request, Collection<Item> items) {
         RequestDto requestDto = new RequestDto();
         requestDto.setDescription(request.getDescription());
-        requestDto.setCreated(LocalDateTime.now());
+        requestDto.setCreated(request.getCreated());
         requestDto.setId(request.getId());
         requestDto.setItems(new ArrayList<>());
         if (items != null) {
