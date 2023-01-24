@@ -16,6 +16,6 @@ public interface ItemRequestRepository extends JpaRepository<ItemRequest, Intege
     Collection<ItemRequest> getDistinctByRequesterOrderByCreatedDesc(User requester);
 
     @Query("SELECT ir FROM ItemRequest ir WHERE ir.requester <> ?1")
-    Page<ItemRequest> getDistinctByRequesterNotContainingOrderByCreatedDesc(User requester
-            , Pageable pageable);
+    Page<ItemRequest> getDistinctByRequesterNotContainingOrderByCreatedDesc(User requester,
+                                                                            Pageable pageable);
 }
