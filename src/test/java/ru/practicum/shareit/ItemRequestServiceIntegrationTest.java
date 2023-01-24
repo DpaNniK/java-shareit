@@ -13,7 +13,7 @@ import ru.practicum.shareit.exception.RequestError;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.request.dto.RequestDto;
-import ru.practicum.shareit.request.model.Request;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
@@ -49,8 +49,8 @@ public class ItemRequestServiceIntegrationTest {
         User user = userService.createUser(createUserDto("иван", "yand@yandex.ru"));
         ItemDto itemDto = createItemDto(user);
         itemService.createItem(user.getId(), itemDto);
-        Request request = new Request();
-        request.setRequestorId(user.getId());
+        ItemRequest request = new ItemRequest();
+        request.setRequester(user);
         request.setCreated(LocalDateTime.now());
         request.setDescription("desc");
 
@@ -71,7 +71,7 @@ public class ItemRequestServiceIntegrationTest {
         User user = userService.createUser(createUserDto("иван", "yand@yandex.ru"));
         ItemDto itemDto = createItemDto(user);
         itemService.createItem(user.getId(), itemDto);
-        Request request = new Request();
+        ItemRequest request = new ItemRequest();
         request.setDescription("desc");
         itemRequestService.createItemRequest(user.getId(), request);
 
@@ -84,7 +84,7 @@ public class ItemRequestServiceIntegrationTest {
         User user = userService.createUser(createUserDto("иван", "yand@yandex.ru"));
         ItemDto itemDto = createItemDto(user);
         itemService.createItem(user.getId(), itemDto);
-        Request request = new Request();
+        ItemRequest request = new ItemRequest();
         request.setDescription("desc");
         RequestDto requestDtoCreated = itemRequestService.createItemRequest(user.getId(), request);
 
@@ -105,7 +105,7 @@ public class ItemRequestServiceIntegrationTest {
         User user = userService.createUser(createUserDto("иван", "yand@yandex.ru"));
         ItemDto itemDto = createItemDto(user);
         itemService.createItem(user.getId(), itemDto);
-        Request request = new Request();
+        ItemRequest request = new ItemRequest();
         request.setDescription("desc");
         RequestDto requestDtoCreated = itemRequestService.createItemRequest(user.getId(), request);
         RequestDto resultRequestDto = itemRequestService.getRequestById(request.getId(), user.getId());
@@ -144,8 +144,8 @@ public class ItemRequestServiceIntegrationTest {
         ItemDto itemDtoTwo = createItemDto(userTwo);
         itemService.createItem(user.getId(), itemDto);
         itemService.createItem(userTwo.getId(), itemDtoTwo);
-        Request request = new Request();
-        Request requestTwo = new Request();
+        ItemRequest request = new ItemRequest();
+        ItemRequest requestTwo = new ItemRequest();
         request.setDescription("desc");
         requestTwo.setDescription("descTwo");
         itemRequestService.createItemRequest(user.getId(), request);

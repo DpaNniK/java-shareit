@@ -4,14 +4,14 @@ import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.RequestDto;
-import ru.practicum.shareit.request.model.Request;
+import ru.practicum.shareit.request.model.ItemRequest;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 @UtilityClass
 public class RequestMapper {
-    public static RequestDto toRequestDto(Request request, Collection<Item> items) {
+    public static RequestDto toRequestDto(ItemRequest request, Collection<Item> items) {
         RequestDto requestDto = new RequestDto();
         requestDto.setDescription(request.getDescription());
         requestDto.setCreated(request.getCreated());

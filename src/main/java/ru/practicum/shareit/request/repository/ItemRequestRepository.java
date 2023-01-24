@@ -5,15 +5,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.request.model.Request;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.Collection;
 
 @Repository
-public interface ItemRequestRepository extends JpaRepository<Request, Integer> {
+public interface ItemRequestRepository extends JpaRepository<ItemRequest, Integer> {
 
-    Collection<Request> getDistinctByRequestorIdOrderByCreatedDesc(Integer requestorId);
+    Collection<ItemRequest> getDistinctByRequesterOrderByCreatedDesc(User requester);
 
-    @Query("select r from Request r where r.requestorId <> ?1 order by r.created desc")
-    Page<Request> getDistinctForPagination(Integer requestorId, Pageable pageable);
+    @Query("SELECT ir FROM ItemRequest ir WHERE ir.requester <> ?1")
+    Page<ItemRequest> getDistinctByRequesterNotContainingOrderByCreatedDesc(User requester
+            , Pageable pageable);
 }

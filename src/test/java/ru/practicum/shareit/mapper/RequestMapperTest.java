@@ -6,7 +6,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.RequestDto;
 import ru.practicum.shareit.request.mapper.RequestMapper;
-import ru.practicum.shareit.request.model.Request;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
@@ -19,13 +19,17 @@ public class RequestMapperTest {
 
     public Item item;
     public User user;
-    public Request request;
+    public ItemRequest request;
 
     @BeforeEach
     void setValues() {
-        this.request = new Request();
+        this.user = new User();
+        user.setId(1);
+        user.setEmail("mail@mail.ru");
+        user.setName("name");
+        this.request = new ItemRequest();
         request.setId(1);
-        request.setRequestorId(1);
+        request.setRequester(user);
         request.setCreated(LocalDateTime.now());
         request.setDescription("Desc");
         this.item = new Item();
@@ -34,10 +38,6 @@ public class RequestMapperTest {
         item.setName("name");
         item.setDescription("desc");
         item.setAvailable(true);
-        this.user = new User();
-        user.setId(1);
-        user.setEmail("mail@mail.ru");
-        user.setName("name");
     }
 
     @Test

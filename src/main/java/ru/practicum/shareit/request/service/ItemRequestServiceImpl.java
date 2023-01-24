@@ -12,7 +12,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.RequestDto;
 import ru.practicum.shareit.request.mapper.RequestMapper;
-import ru.practicum.shareit.request.model.Request;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
@@ -34,11 +34,11 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     //Проверка на существование юзера происходит в getUserById
     @Override
-    public RequestDto createItemRequest(Integer userId, Request request) {
+    public RequestDto createItemRequest(Integer userId, ItemRequest request) {
         User creator = userService.getUserById(userId);
-        request.setRequestorId(creator.getId());
+        request.setRequester(creator);
         log.info("Создан новый запрос на вещь от пользователя {}", creator);
-        Request itemRequest = itemRequestRepository.save(request);
+        ItemRequest itemRequest = itemRequestRepository.save(request);
         return RequestMapper.toRequestDto(itemRequest, new ArrayList<>());
     }
 
@@ -46,7 +46,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public Collection<RequestDto> getItemRequestForUser(Integer userId) {
         User creator = userService.getUserById(userId);
         log.info("Пользователь {} просмотрел список своих запросов", creator);
-        Collection<Request> itemRequests = itemRequestRepository.getDistinctByRequestorIdOrderByCreatedDesc(userId);
+        Collection<ItemRequest> itemRequests = itemRequestRepository
+                .getDistinctByRequesterOrderByCreatedDesc(creator);
         return getItemsRequest(itemRequests);
     }
 
@@ -60,8 +61,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         }
         from = from / size;
         log.info("Пользователь {} просматривает список запросов вещей", user);
-        Page<Request> itemRequests = itemRequestRepository
-                .getDistinctForPagination(userId, PageRequest.of(from, size));
+        Page<ItemRequest> itemRequests = itemRequestRepository
+                .getDistinctByRequesterNotContainingOrderByCreatedDesc(user, PageRequest.of(from, size));
         return getItemsRequest(itemRequests.stream().collect(Collectors.toList()));
     }
 
@@ -69,7 +70,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public Collection<RequestDto> getAllRequestItems() {
         log.info("Просмотрен список всех запросов");
-        Collection<Request> allRequests = itemRequestRepository
+        Collection<ItemRequest> allRequests = itemRequestRepository
                 .findAll(Sort.by("created").descending());
         return getItemsRequest(allRequests);
     }
@@ -77,7 +78,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public RequestDto getRequestById(Integer requestId, Integer userId) {
         User user = userService.getUserById(userId);
-        Request request = itemRequestRepository.findById(requestId).orElse(null);
+        ItemRequest request = itemRequestRepository.findById(requestId).orElse(null);
         if (request == null) {
             log.warn("Пользователь {} запрос несуществующий запрос под id {}", user, requestId);
             throw new RequestError(HttpStatus.NOT_FOUND, "Запрос под таким ID не найден");
@@ -88,9 +89,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     //Здесь каждому запросу request присваиваю коллекцию ответов. Метод универсальный,
     //зависит лишь от входящего списка, который формируется в зависимости от запроса к бд
-    private Collection<RequestDto> getItemsRequest(Collection<Request> itemRequests) {
+    private Collection<RequestDto> getItemsRequest(Collection<ItemRequest> itemRequests) {
         Collection<RequestDto> itemRequestDtos = new ArrayList<>();
-        Collection<Integer> requestIds = itemRequests.stream().map((Request::getId)).collect(Collectors.toList());
+        Collection<Integer> requestIds = itemRequests.stream().map((ItemRequest::getId)).collect(Collectors.toList());
         Map<Integer, Collection<Item>> requestMapWithAnswer = itemRepository
                 .getItemsByRequestIds(requestIds).stream().collect(Collectors.toMap(Item::getRequestId, List::of));
         itemRequests.forEach(request -> {

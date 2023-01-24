@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.CreationTimestamp;
+import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -15,14 +17,16 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @Entity
 @Table(name = "requests", schema = "public")
-public class Request {
+public class ItemRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @NotNull
     private String description;
-    private Integer requestorId;
-
+    @OneToOne
+    @JoinColumn(name = "requester", referencedColumnName = "id")
+    private User requester;
     @Column(name = "created", nullable = false)
-    private LocalDateTime created = LocalDateTime.now();
+    @CreationTimestamp
+    private LocalDateTime created;
 }

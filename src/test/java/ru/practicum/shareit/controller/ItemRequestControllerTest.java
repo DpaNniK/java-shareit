@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.shareit.request.ItemRequestController;
 import ru.practicum.shareit.request.dto.RequestDto;
-import ru.practicum.shareit.request.model.Request;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.service.ItemRequestService;
 
 import java.nio.charset.StandardCharsets;
@@ -38,7 +38,7 @@ public class ItemRequestControllerTest {
     private final ObjectMapper mapper = new ObjectMapper();
     private MockMvc mvc;
     private RequestDto requestDto;
-    private Request request;
+    private ItemRequest request;
 
     @BeforeEach
     void setUp() {
@@ -52,7 +52,7 @@ public class ItemRequestControllerTest {
         requestDto.setId(1);
         requestDto.setDescription("Desc");
         requestDto.setCreated(LocalDateTime.now());
-        this.request = new Request();
+        this.request = new ItemRequest();
         request.setId(requestDto.getId());
         request.setCreated(requestDto.getCreated());
         request.setDescription(requestDto.getDescription());
