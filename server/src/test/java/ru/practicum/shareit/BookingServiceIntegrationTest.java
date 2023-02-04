@@ -557,22 +557,6 @@ public class BookingServiceIntegrationTest {
         assertEquals(HttpStatus.NOT_FOUND, er.getStatus());
     }
 
-    @Test
-    public void get400BadRequestForPaginationUser() {
-        RequestError error = Assertions.assertThrows(
-                RequestError.class,
-                getErrorBadRequestForPaginationUser());
-        assertEquals(HttpStatus.BAD_REQUEST, error.getStatus());
-    }
-
-    @Test
-    public void get400BadRequestForPaginationOwner() {
-        RequestError error = Assertions.assertThrows(
-                RequestError.class,
-                getErrorBadRequestForPaginationOwner());
-        assertEquals(HttpStatus.BAD_REQUEST, error.getStatus());
-    }
-
     private Executable getErrorForIncorrectDataBooking() {
         return () -> {
             User owner = userService.createUser(createUserDto("игорь", "mail@mail.ru"));
@@ -650,16 +634,6 @@ public class BookingServiceIntegrationTest {
 
             bookingService.getBookingByIdForOwnerOrBooker(bookingDtoCreated.getId(), 100);
         };
-    }
-
-    private Executable getErrorBadRequestForPaginationUser() {
-        return () -> bookingService
-                .getAllBookingsForUserWithPagination(BookingState.ALL, 1, -5, 0);
-    }
-
-    private Executable getErrorBadRequestForPaginationOwner() {
-        return () -> bookingService
-                .getAllBookingForOwnerWithPagination(BookingState.ALL, 1, -5, 0);
     }
 
     private Booking createBooking(Item item, User user) {

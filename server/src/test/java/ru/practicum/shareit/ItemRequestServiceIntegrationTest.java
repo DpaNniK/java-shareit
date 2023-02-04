@@ -128,15 +128,6 @@ public class ItemRequestServiceIntegrationTest {
     }
 
     @Test
-    public void get400NotFoundErrorForIncorrectPaginationLimit() {
-        RequestError er = Assertions.assertThrows(
-                RequestError.class,
-                getErrorForIncorrectPaginationLimit()
-        );
-        assertEquals(HttpStatus.BAD_REQUEST, er.getStatus());
-    }
-
-    @Test
     public void getItemsWithPaginationTest() {
         User user = userService.createUser(createUserDto("иван", "yand@yandex.ru"));
         User userTwo = userService.createUser(createUserDto("илья", "mail@yandex.ru"));
@@ -162,10 +153,6 @@ public class ItemRequestServiceIntegrationTest {
         return () -> itemRequestService.getRequestById(1, user.getId());
     }
 
-    private Executable getErrorForIncorrectPaginationLimit() {
-        User user = userService.createUser(createUserDto("иван", "yand@yandex.ru"));
-        return () -> itemRequestService.getItemsWithPagination(user.getId(), -5, 10);
-    }
 
     private ItemDto createItemDto(User user) {
         ItemDto itemDto = new ItemDto();

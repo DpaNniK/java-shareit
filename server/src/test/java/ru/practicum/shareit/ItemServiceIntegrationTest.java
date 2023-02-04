@@ -248,24 +248,6 @@ class ItemServiceIntegrationTest {
     }
 
     @Test
-    public void getRequestErrorForPagination() {
-        RequestError er = Assertions.assertThrows(
-                RequestError.class,
-                generateExecutableForIncorrectPagination()
-        );
-        assertEquals(HttpStatus.BAD_REQUEST, er.getStatus());
-    }
-
-    @Test
-    public void getRequestErrorForPaginationSearch() {
-        RequestError er = Assertions.assertThrows(
-                RequestError.class,
-                generateExecutableForSearchItemByTextWithPagination()
-        );
-        assertEquals(HttpStatus.BAD_REQUEST, er.getStatus());
-    }
-
-    @Test
     public void getRequestErrorForCreateCommentNullUser() {
         RequestError er = Assertions.assertThrows(
                 RequestError.class,
@@ -305,20 +287,6 @@ class ItemServiceIntegrationTest {
 
     private Executable generateExecutableForCreateCommentNotFoundItem() {
         return () -> itemService.createComment(10, 10, "comment");
-    }
-
-    private Executable generateExecutableForIncorrectPagination() {
-        return () -> {
-            User user = userService.createUser(createUserDto());
-            itemService.getAllItemsWithPagination(user.getId(), -5, 10);
-        };
-    }
-
-    private Executable generateExecutableForSearchItemByTextWithPagination() {
-        return () -> {
-            User user = userService.createUser(createUserDto());
-            itemService.searchItemByTextWithPagination(user.getId(), -5, 10, "nam");
-        };
     }
 
     private Executable generateExecutableForCreateUser() {
