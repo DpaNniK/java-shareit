@@ -107,10 +107,6 @@ public class ItemServiceImpl implements ItemService {
     public Collection<ItemDto> getAllItemsWithPagination(Integer userId, Integer from, Integer size) {
         User user = userService.getUserById(userId);
         Collection<ItemDto> itemDtoCollections = new ArrayList<>();
-        if (from < 0 || size <= 0 || size < from) {
-            log.warn("Пользователь ввел неправильные границы для пагинации");
-            throw new RequestError(HttpStatus.BAD_REQUEST, "Неверные границы пагинации");
-        }
         from = from / size;
         log.info("Получен запрос на вывод списка вещей пользователя {} с {} по {} страницу", user, from, size);
         Page<Item> items = itemRepository.findItemsByOwnerId(userId, PageRequest.of(from, size));
@@ -128,12 +124,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Collection<Item> searchItemByTextWithPagination(Integer userId, Integer from, Integer size, String text) {
-        if (from < 0 || size <= 0 || size < from) {
-            log.warn("Пользователь ввел неправильные границы для пагинации");
-            throw new RequestError(HttpStatus.BAD_REQUEST, "Неверные границы пагинации");
-        }
-        from = from / size;
         User user = userService.getUserById(userId);
+        from = from / size;
         log.info("Получен запрос на поиск {} от пользователя {}", text, user);
         if (text.isEmpty()) return new ArrayList<>();
         Page<Item> pageItem = itemRepository.searchByText(text, true, PageRequest.of(from, size));
@@ -158,11 +150,11 @@ public class ItemServiceImpl implements ItemService {
         User user = userRepository.findById(userId).orElse(null);
         if (item == null) {
             log.warn("Пользователь {} пытался оставить комментарий ненайденной вещи {}", user, itemId);
-            throw new RequestError(HttpStatus.BAD_REQUEST, "Вещь не найдена");
+            throw new RequestError(HttpStatus.BAD_REQUEST, "Вещь с ID = " + itemId + " не найдена");
         }
         if (user == null) {
             log.warn("Ошибка при добавлении комментария, пользователь {} не найден", userId);
-            throw new RequestError(HttpStatus.BAD_REQUEST, "Пользователь не найден");
+            throw new RequestError(HttpStatus.BAD_REQUEST, "Пользователь c ID = " + userId + " не найден");
         }
         if (!checkUserIsBookerForItem(userId, itemId)) {
             log.warn("Ошибка при добавлении комментария, пользователь {} не брал в аренду вещь {}", user, item);
@@ -199,12 +191,13 @@ public class ItemServiceImpl implements ItemService {
         if (resultItem == null) {
             log.warn("Невозможно обновить информацию о предмете. Вещь с id = {} не найдена",
                     itemId);
-            throw new RequestError(HttpStatus.NOT_FOUND, "Вещь не найдена");
+            throw new RequestError(HttpStatus.NOT_FOUND, "Вещь с ID = " + itemId + " не найдена");
         }
         if (!Objects.equals(resultItem.getOwnerId(), userId)) {
             log.warn("Невозможно обновить информацию о предмете. Пользователь {} не является владельцем вещи {}",
                     userId, itemId);
-            throw new RequestError(HttpStatus.NOT_FOUND, "Пользователь не является владельцем вещи");
+            throw new RequestError(HttpStatus.NOT_FOUND, "Пользователь c ID = " + userId + "не является" +
+                    " владельцем вещи с ID = " + itemId);
         }
     }
 

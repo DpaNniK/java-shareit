@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.RequestDto;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 @Controller
 @RequestMapping(path = "/requests")
@@ -31,8 +33,9 @@ public class ItemRequestController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Object> getItemsWithPagination(@RequestParam(value = "from", required = false) Integer from,
-                                                         @RequestParam(value = "size", required = false) Integer size,
+    public ResponseEntity<Object> getItemsWithPagination(@PositiveOrZero
+                                                         @RequestParam(value = "from", required = false) Integer from,
+                                                         @Positive @RequestParam(value = "size", required = false) Integer size,
                                                          @RequestHeader("X-Sharer-User-Id") Integer userId) {
         return requestClient.getItemsWithPagination(from, size, userId);
     }

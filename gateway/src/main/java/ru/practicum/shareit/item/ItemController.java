@@ -11,6 +11,8 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.marker.ValidItemUpdate;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 @Controller
 @RequestMapping(path = "/items")
@@ -46,14 +48,18 @@ public class ItemController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> getAllItemsOwner(@RequestParam(value = "from", required = false) Integer from,
+    public ResponseEntity<Object> getAllItemsOwner(@PositiveOrZero
+                                                   @RequestParam(value = "from", required = false) Integer from,
+                                                   @Positive
                                                    @RequestParam(value = "size", required = false) Integer size,
                                                    @RequestHeader("X-Sharer-User-Id") Integer userId) {
         return itemClient.getAllItemsOwner(from, size, userId);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Object> searchItemByText(@RequestParam(value = "from", required = false) Integer from,
+    public ResponseEntity<Object> searchItemByText(@PositiveOrZero
+                                                   @RequestParam(value = "from", required = false) Integer from,
+                                                   @Positive
                                                    @RequestParam(value = "size", required = false) Integer size,
                                                    @RequestHeader("X-Sharer-User-Id") Integer userId,
                                                    @RequestParam String text) {

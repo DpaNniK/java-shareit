@@ -45,7 +45,7 @@ public class BookingServiceImpl implements BookingService {
         ItemDto item = itemService.getItemById(booking.getItemId(), owner.getId());
         if (!item.getAvailable()) {
             log.warn("Ошибка при аренде вещи {}, вещь не доступна для аренды", item);
-            throw new RequestError(HttpStatus.BAD_REQUEST, "Вещь не доступна для аренды");
+            throw new RequestError(HttpStatus.BAD_REQUEST, "Вещь с ID =" + booking.getItemId() + " не доступна для аренды");
         }
         if (Objects.equals(item.getOwner().getId(), owner.getId())) {
             log.warn("Ошибка при аренде вещи {}, пользователь не может арендовать собственную вещь", item);
@@ -64,7 +64,8 @@ public class BookingServiceImpl implements BookingService {
         BookingDto bookingDto = getBookingById(bookingId);
         if (!Objects.equals(bookingDto.getItem().getOwnerId(), ownerId)) {
             log.warn("Невозможно принять/отменить аренду. Пользователь не является владельцем вещи");
-            throw new RequestError(HttpStatus.NOT_FOUND, "Пользователь не является владельцем вещи");
+            throw new RequestError(HttpStatus.NOT_FOUND, "Пользователь с ID = " + ownerId +
+                    " не является владельцем вещи с ID = " + bookingDto.getItem().getId());
         }
         if (!Objects.equals(bookingDto.getStatus(), Status.WAITING)) {
             log.warn("Невозможно изменить статус аренды. Статус аренды {}", bookingDto.getStatus());
@@ -88,7 +89,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId).orElse(null);
         if (booking == null) {
             log.warn("Ошибка. Запрос аренды под id {} не найден", bookingId);
-            throw new RequestError(HttpStatus.NOT_FOUND, "Запрос на аренду не найден");
+            throw new RequestError(HttpStatus.NOT_FOUND, "Запрос на аренду с ID" + bookingId + " не найден");
         }
         User booker = userService.getUserById(booking.getBookerId());
         ItemDto item = itemService.getItemById(booking.getItemId(), booker.getId());
@@ -102,7 +103,7 @@ public class BookingServiceImpl implements BookingService {
         if (!Objects.equals(bookingDto.getItem().getOwnerId(), userId)
                 && !Objects.equals(bookingDto.getBooker().getId(), userId)) {
             log.warn("Ошибка. Запрос аренды под id {} не найден", bookingId);
-            throw new RequestError(HttpStatus.NOT_FOUND, "Запрос на аренду не найден");
+            throw new RequestError(HttpStatus.NOT_FOUND, "Запрос на аренду с ID" + bookingId + " не найден");
         }
         log.info("Пользователь с id {} запросил информацию о запросе аренды с id {}",
                 userId, bookingId);
@@ -165,10 +166,6 @@ public class BookingServiceImpl implements BookingService {
                                                                       Integer size) {
         Collection<BookingDto> userBooking = new ArrayList<>();
         //Проверка, что юзер существует
-        if (from < 0 || size <= 0 || size < from) {
-            log.warn("Пользователь ввел неправильные границы для пагинации");
-            throw new RequestError(HttpStatus.BAD_REQUEST, "Неверные границы пагинации");
-        }
         User userSender = userService.getUserById(userId);
         from = from / size;
         switch (state) {
@@ -273,10 +270,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Collection<BookingDto> getAllBookingForOwnerWithPagination(BookingState state, Integer ownerId, Integer from, Integer size) {
-        if (from < 0 || size <= 0 || size < from) {
-            log.warn("Пользователь ввел неправильные границы для пагинации");
-            throw new RequestError(HttpStatus.BAD_REQUEST, "Неверные границы пагинации");
-        }
         from = from / size;
         Collection<BookingDto> ownerBooking = new ArrayList<>();
         User owner = userService.getUserById(ownerId);

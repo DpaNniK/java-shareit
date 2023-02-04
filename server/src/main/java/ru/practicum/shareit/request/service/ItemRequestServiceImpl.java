@@ -55,10 +55,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public Collection<RequestDto> getItemsWithPagination(Integer userId, Integer from, Integer size) {
         User user = userService.getUserById(userId);
-        if (size <= 0 || from < 0 || size < from) {
-            log.warn("Пользователь ввел неправильные границы для пагинации");
-            throw new RequestError(HttpStatus.BAD_REQUEST, "Неверные границы пагинации");
-        }
         from = from / size;
         log.info("Пользователь {} просматривает список запросов вещей", user);
         Page<ItemRequest> itemRequests = itemRequestRepository
@@ -81,7 +77,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         ItemRequest request = itemRequestRepository.findById(requestId).orElse(null);
         if (request == null) {
             log.warn("Пользователь {} запрос несуществующий запрос под id {}", user, requestId);
-            throw new RequestError(HttpStatus.NOT_FOUND, "Запрос под таким ID не найден");
+            throw new RequestError(HttpStatus.NOT_FOUND, "Запрос под ID" + requestId + " не найден");
         }
         Collection<Item> itemRequestCollection = itemRepository.getItemsByRequestId(requestId);
         return RequestMapper.toRequestDto(request, itemRequestCollection);

@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
             return userRepository.save(UserMapper.toUser(userDto));
         }
         log.warn("Ошибка при обновлении пользователя. Пользователь с таким id не найден");
-        throw new RequestError(HttpStatus.BAD_REQUEST, "Пользователь с таким id не найден");
+        throw new RequestError(HttpStatus.BAD_REQUEST, "Пользователь с ID = " + userDto.getId() + " не найден");
     }
 
     @Override
@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
             log.warn("Ошибка при получении пользователя. Пользователь с таким id не найден");
-            throw new RequestError(HttpStatus.NOT_FOUND, "Пользователь с таким id не найден");
+            throw new RequestError(HttpStatus.NOT_FOUND, "Пользователь с id " + userId + " не найден");
         }
         return user;
     }
@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
     public void deleteUserById(Integer userId) {
         if (!checkContainsIdInUserMap(userId)) {
             log.warn("Ошибка при удалении пользователя. Пользователь с таким id не найден");
-            throw new RequestError(HttpStatus.BAD_REQUEST, "Пользователь с таким id не найден");
+            throw new RequestError(HttpStatus.BAD_REQUEST, "Пользователь с id " + userId + " не найден");
         }
         log.info("Пользователь с id = {} удален", userId);
         userRepository.deleteById(userId);
